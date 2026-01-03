@@ -1,6 +1,5 @@
 // server.js
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -66,3 +65,4 @@ Provide a detailed explanation with examples and tips.
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+
