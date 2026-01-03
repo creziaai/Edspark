@@ -1,14 +1,22 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
+const PORT = process.env.PORT || 10000;
+
 app.use(cors());
 app.use(express.json());
 
+// ✅ API ROUTE
 app.post("/api/answer", async (req, res) => {
   const { question, description, subject } = req.body;
 
@@ -35,17 +43,15 @@ Provide a detailed explanation with examples and tips.
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "StudySpark",
+          "HTTP-Referer": "https://your-render-url.onrender.com",
+          "X-Title": "StudySpark"
         },
         body: JSON.stringify({
           model: "qwen/qwen3-coder:free",
-          messages: [
-            { role: "user", content: prompt }
-          ],
+          messages: [{ role: "user", content: prompt }],
           temperature: 0.7,
-          max_tokens: 1200,
-        }),
+          max_tokens: 1200
+        })
       }
     );
 
@@ -56,13 +62,18 @@ Provide a detailed explanation with examples and tips.
     }
 
     res.json(data);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+// ✅ SERVE FRONTEND
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
